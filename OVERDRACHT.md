@@ -7,6 +7,18 @@ Kijk eerst naar `demo/mijn-knop-demo.mp4`: zo hoort het eruit te zien en zo hoor
 
 ---
 
+## 0. Eerst controleren (verplicht, vóór je iets bouwt)
+
+1. Draai `python3 controle.py` in deze map. Het script kijkt alleen en verandert niets. Het controleert Python, de pakketten, het thuisnetwerk, internet, de Sonos, of de app altijd kan blijven draaien, en of de poort vrij is.
+2. Staat er **FOUT** in de uitslag? Stop dan en leg je eigenaar in gewone woorden uit wat er mist en wat hij moet doen. Bouw niet verder.
+3. Kijk zelf na, of vraag als het niet anders kan:
+   - Heeft hij een **Homey Pro** met de app **HomeyScript**?
+   - Welke **knop** is het, en staat die in Homey?
+   - Is **Spotify gekoppeld in de Sonos-app**?
+4. Speel als allereerste proef **één liedje zacht** af op de Sonos met SoCo (ShareLinkPlugin). Lukt dat niet, dan heeft de rest geen zin: los dat eerst op.
+
+---
+
 ## 1. Wat de app doet (dit zijn vaste keuzes, niet aan tornen zonder je eigenaar)
 
 - Een kind heeft een draaiknop met 4 knoppen aan de muur (bij ons een Philips **Hue Tap Dial**). Op een iPad richt het kind de knop zelf in.

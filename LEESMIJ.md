@@ -7,7 +7,7 @@ Bekijk eerst het filmpje: `demo/mijn-knop-demo.mp4`
 **Zo zet je hem bij jou thuis neer (met Homey):**
 1. Zet deze map op je server.
 2. Zeg tegen je Claude in T3: *"Lees OVERDRACHT.md in deze map en zet Mijn knop op mijn Homey en Sonos."*
-3. Je Claude zoekt uit wat je hebt, bouwt de koppeling en test die. Hij vraagt je alleen iets wat hij niet zelf kan nakijken.
+3. Je Claude controleert eerst of je server en huis er klaar voor zijn (`controle.py`). Daarna zoekt hij uit wat je hebt, bouwt de koppeling en test die. Hij vraagt je alleen iets wat hij niet zelf kan nakijken.
 
 Wat je nodig hebt: een Homey met de officiële HomeyScript-app, Sonos-speakers met Spotify gekoppeld in de Sonos-app, een knop die Homey kent (bijvoorbeeld de Philips Hue Tap Dial) en een server thuis.
 
