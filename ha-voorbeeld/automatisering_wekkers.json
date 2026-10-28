@@ -1,0 +1,46 @@
+{
+ "id": "kind_wekkers",
+ "alias": "het kind wekkers (app Mijn knop)",
+ "description": "4 wekkers van het kind: tijd input_datetime.kind_wekker_N, aan input_boolean.kind_wekker_N_aan, dagen input_text.kind_wekker_N_dagen (ma,di,...). Vervangt automation.wekker_kind_1.",
+ "triggers": [
+  {
+   "trigger": "time",
+   "at": "input_datetime.kind_wekker_1",
+   "id": "1"
+  },
+  {
+   "trigger": "time",
+   "at": "input_datetime.kind_wekker_2",
+   "id": "2"
+  },
+  {
+   "trigger": "time",
+   "at": "input_datetime.kind_wekker_3",
+   "id": "3"
+  },
+  {
+   "trigger": "time",
+   "at": "input_datetime.kind_wekker_4",
+   "id": "4"
+  }
+ ],
+ "conditions": [
+  {
+   "condition": "template",
+   "value_template": "{{ is_state('input_boolean.kind_wekker_' ~ trigger.id ~ '_aan', 'on') }}"
+  },
+  {
+   "condition": "template",
+   "value_template": "{{ ['ma','di','wo','do','vr','za','zo'][now().weekday()] in states('input_text.kind_wekker_' ~ trigger.id ~ '_dagen').split(',') }}"
+  }
+ ],
+ "actions": [
+  {
+   "action": "script.kind_wekker",
+   "data": {
+    "nummer": "{{ trigger.id | int }}"
+   }
+  }
+ ],
+ "mode": "parallel"
+}

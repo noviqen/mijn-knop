@@ -1,0 +1,877 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mijn knop">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1C1D22">
+<link rel="apple-touch-icon" href="/static/icoon-180.png">
+<link rel="manifest" href="/static/manifest.webmanifest">
+<title>Mijn knop</title>
+<style>
+@font-face { font-family: "Sora"; src: url("/static/Sora.woff2") format("woff2"); font-weight: 100 800; font-display: swap; }
+:root {
+  --tekst: #F1EEE8;
+  --gedempt: #9A9AA2;
+  --gloed: #FFB547;
+  --gloed2: #FFD08A;
+  --glas: rgba(255,255,255,.045);
+  --rand: rgba(255,255,255,.07);
+  --hoek: 24px;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { background: #16171B; }
+html, body { margin: 0; height: 100%; color: var(--tekst); }
+body {
+  font-family: "Sora", system-ui, sans-serif;
+  background: radial-gradient(120% 90% at 20% 0%, #2B2D35 0%, #16171B 70%) fixed;
+  -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+  overflow: hidden;
+}
+img { -webkit-user-drag: none; user-drag: none; }
+button { font: inherit; color: inherit; }
+.app {
+  height: 100dvh; display: grid; grid-template-rows: auto 1fr;
+  padding: max(18px, env(safe-area-inset-top)) max(22px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(22px, env(safe-area-inset-left));
+  gap: 18px;
+}
+
+/* ---------- kop ---------- */
+header { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+h1 { font-size: 38px; line-height: 1; font-weight: 700; letter-spacing: -.03em; margin: 0; }
+h1 span { color: var(--gloed); }
+.onder { color: var(--gedempt); font-size: 15px; margin: 8px 0 0; }
+.rechts { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.schakel { display: flex; background: var(--glas); border: 1px solid var(--rand); border-radius: 999px; padding: 4px; }
+.schakel button {
+  border: 0; background: none; padding: 9px 16px; border-radius: 999px; font-size: 14px; font-weight: 600;
+  color: var(--gedempt); cursor: pointer; transition: background .2s, color .2s;
+}
+.schakel button.aan { background: rgba(255,181,71,.16); color: var(--gloed2); }
+.nu {
+  display: none; align-items: center; gap: 10px; max-width: 340px;
+  background: var(--glas); border: 1px solid var(--rand); border-radius: 999px; padding: 5px 5px 5px 16px;
+}
+.nu.zichtbaar { display: flex; }
+.nu .wat { min-width: 0; font-size: 14px; line-height: 1.2; }
+.nu .wat b, .nu .wat small { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nu .wat small { color: var(--gedempt); font-size: 12px; }
+.rond {
+  flex: none; width: 42px; height: 42px; border-radius: 50%; border: 0; cursor: pointer;
+  background: var(--gloed); color: #1B1408; display: grid; place-items: center;
+}
+.rond svg { width: 18px; height: 18px; }
+
+/* ---------- twee helften ---------- */
+main { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); gap: 18px; min-height: 0; }
+.paneel {
+  background: var(--glas); border: 1px solid var(--rand); border-radius: calc(var(--hoek) + 6px);
+  padding: 20px; min-height: 0; display: flex; flex-direction: column;
+}
+h2 { font-size: 20px; font-weight: 700; margin: 0; letter-spacing: -.01em; }
+.paneel-kop { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+.klein { color: var(--gedempt); font-size: 13px; }
+
+/* ---------- de knop ---------- */
+.kolomkop { display: grid; grid-template-columns: 58px 1fr 1fr; gap: 12px; margin: 0 0 8px; color: var(--gedempt); font-size: 13px; font-weight: 600; }
+.kolomkop span { display: flex; align-items: center; gap: 7px; }
+.kolomkop i { display: inline-block; height: 8px; border-radius: 4px; background: var(--gedempt); opacity: .55; }
+.rijen { flex: 1; display: grid; grid-template-rows: repeat(4, minmax(0, 1fr)); gap: 12px; min-height: 0; }
+.rij { display: grid; grid-template-columns: 58px 1fr 1fr; gap: 12px; min-height: 0; }
+.knopje {
+  border-radius: 18px; display: grid; place-items: center;
+  background: linear-gradient(160deg, #3A3C45, #24252B); border: 1px solid rgba(255,255,255,.09);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 6px 16px rgba(0,0,0,.25);
+}
+.stippen { display: grid; grid-template-columns: repeat(2, 8px); gap: 6px; justify-content: center; }
+.stippen b { width: 8px; height: 8px; border-radius: 50%; background: var(--tekst); opacity: .85; }
+.stippen.een { grid-template-columns: 8px; }
+.tip { margin-top: 14px; display: flex; gap: 18px; flex-wrap: wrap; color: var(--gedempt); font-size: 13px; }
+.tip span { display: flex; align-items: center; gap: 7px; }
+.tip svg { width: 16px; height: 16px; opacity: .8; }
+
+.plek {
+  container-type: size;
+  position: relative; min-height: 0; border-radius: var(--hoek); overflow: hidden;
+  border: 1.5px dashed rgba(255,255,255,.13); background: rgba(255,255,255,.02);
+  transition: border-color .2s, background .2s, transform .2s, box-shadow .3s;
+}
+.plek.vol { border: 1px solid var(--rand); border-style: solid; background: rgba(255,255,255,.05); }
+.plek .binnen { position: absolute; inset: 0; display: flex; align-items: center; gap: 12px; padding: 12px; }
+.plek .hoes {
+  flex: none; height: 100%; aspect-ratio: 1; max-height: 92px; border-radius: 14px; object-fit: cover;
+  background: #2E3038; box-shadow: 0 6px 18px rgba(0,0,0,.35); touch-action: none;
+}
+.plek .tekst { min-width: 0; flex: 1; }
+.plek .naam {
+  font-weight: 600; font-size: 15px; line-height: 1.25;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.plek .naam[data-actie] { cursor: text; }
+.naamveld {
+  width: 100%; font: inherit; font-weight: 600; font-size: 15px; color: var(--tekst);
+  background: rgba(0,0,0,.3); border: 1px solid rgba(255,181,71,.6); border-radius: 10px; padding: 6px 8px; outline: none;
+  -webkit-user-select: text; user-select: text;
+}
+.plek .soort { color: var(--gedempt); font-size: 12px; margin-top: 3px; display: flex; align-items: center; gap: 6px; }
+.plek .knoppen { display: flex; gap: 6px; margin-top: 8px; }
+.plek .mini {
+  width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--rand); background: rgba(255,255,255,.06);
+  display: grid; place-items: center; cursor: pointer; color: var(--tekst);
+}
+.plek .mini svg { width: 14px; height: 14px; }
+.plek .leeg {
+  position: absolute; inset: 0; display: grid; place-items: center; text-align: center;
+  color: rgba(255,255,255,.32); font-size: 13px; font-weight: 600; padding: 10px;
+}
+.plek .leeg svg { width: 22px; height: 22px; display: block; margin: 0 auto 6px; }
+/* smalle plek (iPad staand): hoes boven, knoppen klein */
+@container (max-width: 190px) {
+  .plek .binnen { flex-direction: column; align-items: stretch; gap: 8px; padding: 10px; }
+  .plek .hoes { height: auto; width: 100%; max-height: none; aspect-ratio: auto; flex: 1; min-height: 0; }
+  .plek .tekst { flex: none; }
+  .plek .naam { font-size: 13px; -webkit-line-clamp: 1; }
+  .plek .soort { display: none; }
+  .plek .knoppen { position: absolute; top: 14px; right: 14px; margin: 0; }
+  .plek .mini { width: 30px; height: 30px; background: rgba(22,23,27,.72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+}
+@container (max-height: 96px) {
+  .plek .knoppen { display: none; }
+}
+
+.plek.doel { border: 2px solid var(--gloed); background: rgba(255,181,71,.10); transform: scale(1.025); }
+.kiezen .plek { border-color: rgba(255,181,71,.55); animation: wenk 1.4s ease-in-out infinite; cursor: pointer; }
+@keyframes wenk { 50% { background: rgba(255,181,71,.08); } }
+.plek.speelt { border: 1px solid rgba(255,181,71,.55); box-shadow: 0 0 0 1px rgba(255,181,71,.25), 0 0 34px rgba(255,181,71,.22); background: rgba(255,181,71,.07); }
+.plek.plop { animation: plop .5s cubic-bezier(.3,1.6,.5,1); }
+@keyframes plop { 0% { transform: scale(.94); } 100% { transform: scale(1); } }
+.golf { display: none; gap: 2px; align-items: flex-end; height: 11px; }
+.speelt .golf { display: inline-flex; }
+.golf i { width: 3px; border-radius: 2px; background: var(--gloed); animation: golf 1s ease-in-out infinite; }
+.golf i:nth-child(2) { animation-delay: -.35s; } .golf i:nth-child(3) { animation-delay: -.7s; }
+@keyframes golf { 0%,100% { height: 3px; } 50% { height: 11px; } }
+
+/* ---------- rusttijd ---------- */
+.slaapt {
+  display: none; align-items: center; gap: 12px; margin: 0 0 12px; padding: 11px 16px; border-radius: 18px; flex: none;
+  background: rgba(140,160,255,.10); border: 1px solid rgba(140,160,255,.25); color: #C9D0FF; font-size: 14px; font-weight: 600;
+}
+.slaapt svg { width: 20px; height: 20px; flex: none; }
+.slaapt b { color: #fff; }
+.rust .slaapt { display: flex; }
+.rust .plek [data-actie="speel"] { display: none; }
+.rust .knopje { opacity: .45; }
+
+/* ---------- tabs ---------- */
+.tabs { display: flex; gap: 4px; background: rgba(0,0,0,.22); border-radius: 999px; padding: 4px; }
+.tabs button {
+  border: 0; background: none; border-radius: 999px; padding: 8px 16px; font-size: 16px; font-weight: 700;
+  color: var(--gedempt); cursor: pointer; transition: background .2s, color .2s;
+}
+.tabs button.aan { background: rgba(255,255,255,.1); color: var(--tekst); }
+.tabblad { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.tabblad[hidden] { display: none; }
+
+/* ---------- wekkers ---------- */
+.wekkers { flex: 1; min-height: 0; display: grid; grid-template-rows: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.wekker {
+  min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: center;
+  border-radius: var(--hoek); padding: 12px 12px 12px 18px; background: rgba(255,255,255,.035); border: 1px solid var(--rand);
+  transition: background .3s, border-color .3s, box-shadow .3s;
+}
+.wekker.aan { background: rgba(255,181,71,.07); border-color: rgba(255,181,71,.35); box-shadow: 0 0 30px rgba(255,181,71,.08); }
+.wekker .links { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.wekker .boven { display: flex; align-items: center; gap: 12px; }
+.wekker .tijd { position: relative; display: flex; align-items: baseline; gap: 10px; cursor: pointer; }
+.wekker .tijd b { font-size: 38px; line-height: 1; font-weight: 700; letter-spacing: -.03em; font-variant-numeric: tabular-nums; color: var(--gedempt); transition: color .3s; }
+.wekker.aan .tijd b { color: var(--tekst); }
+.wekker .tijd small { font-size: 13px; color: var(--gedempt); font-weight: 600; }
+.wekker .tijd input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; font-size: 16px; }
+.schuif {
+  flex: none; margin-left: auto; width: 56px; height: 32px; border-radius: 999px; border: 0; padding: 3px; cursor: pointer;
+  background: rgba(255,255,255,.14); transition: background .25s;
+}
+.schuif i { display: block; width: 26px; height: 26px; border-radius: 50%; background: #F1EEE8; box-shadow: 0 2px 6px rgba(0,0,0,.35); transition: transform .25s cubic-bezier(.3,1.4,.5,1); }
+.schuif[aria-checked="true"] { background: var(--gloed); }
+.schuif[aria-checked="true"] i { transform: translateX(24px); background: #fff; }
+.schuif:disabled { opacity: .3; cursor: default; }
+.dagen { display: flex; gap: 5px; flex-wrap: wrap; }
+.dag {
+  width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--rand); background: none; cursor: pointer;
+  font-size: 12px; font-weight: 700; color: var(--gedempt); padding: 0; transition: background .2s, color .2s;
+}
+.dag.aan { background: rgba(255,255,255,.12); color: var(--tekst); border-color: transparent; }
+.wekker.aan .dag.aan { background: rgba(255,181,71,.2); color: var(--gloed2); }
+.wekkerplek { width: 132px; height: 100%; max-height: 132px; aspect-ratio: auto; container-type: normal; }
+.wekkerplek .binnen { flex-direction: column; align-items: stretch; gap: 6px; padding: 8px; }
+.wekkerplek .hoes { width: 100%; height: auto; max-height: none; flex: 1; min-height: 0; aspect-ratio: auto; border-radius: 12px; }
+.wekkerplek .naam { font-size: 12px; -webkit-line-clamp: 1; }
+.wekkerplek .knoppen { position: absolute; top: 12px; right: 12px; margin: 0; gap: 4px; }
+.wekkerplek .mini { width: 28px; height: 28px; background: rgba(22,23,27,.72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.wekkerplek .leeg { font-size: 12px; }
+
+/* ---------- spotify ---------- */
+.lijst {
+  flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 14px 12px; align-content: start;
+  margin: 0 -8px; padding: 8px 8px 10px;
+}
+.kaart { cursor: grab; touch-action: pan-y; border-radius: 16px; padding: 6px; margin: -6px; transition: background .2s, opacity .2s; }
+.kaart .hoes { width: 100%; aspect-ratio: 1; border-radius: 14px; object-fit: cover; display: block; background: #2E3038; box-shadow: 0 6px 16px rgba(0,0,0,.3); }
+.kaart .titel { font-size: 13px; font-weight: 600; line-height: 1.25; margin-top: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.kaart .soort { font-size: 11px; color: var(--gedempt); margin-top: 2px; }
+.kaart.gekozen { background: rgba(255,181,71,.14); outline: 2px solid var(--gloed); }
+.kaart.weg { opacity: .35; }
+.leegte { grid-column: 1 / -1; color: var(--gedempt); font-size: 14px; padding: 30px 0; text-align: center; line-height: 1.5; }
+
+.stappen { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 8px; flex: none; }
+.stappen li { display: flex; align-items: center; gap: 12px; font-size: 14px; line-height: 1.35; color: #D9D6D0; }
+.stappen b {
+  flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+  background: rgba(255,181,71,.14); color: var(--gloed2); font-size: 13px;
+}
+.stappen em { font-style: normal; font-weight: 700; color: var(--tekst); }
+.tussen { margin: 20px 0 12px; }
+.tussen h2 { font-size: 16px; }
+.plak { display: flex; gap: 8px; flex: none; }
+.plak input {
+  flex: 1; min-width: 0; font: inherit; font-size: 17px; color: var(--tekst);
+  background: rgba(0,0,0,.22); border: 1px solid var(--rand); border-radius: 18px; padding: 16px 16px; outline: none;
+  -webkit-user-select: text; user-select: text;
+}
+.plak input::placeholder { color: rgba(255,255,255,.35); }
+.plak input:focus { border-color: rgba(255,181,71,.5); }
+.plak button { border: 0; border-radius: 16px; padding: 0 18px; background: rgba(255,255,255,.1); font-weight: 600; cursor: pointer; }
+.gevonden { margin-top: 10px; display: none; flex: none; }
+.gevonden.zichtbaar { display: block; }
+.gevonden .kaart { display: flex; align-items: center; gap: 12px; margin: 0; padding: 8px; background: rgba(255,255,255,.05); border: 1px solid var(--rand); }
+.gevonden .kaart .hoes { width: 72px; height: 72px; flex: none; }
+.gevonden .kaart .titel { font-size: 16px; }
+.gevonden .kaart .titel { margin: 0; }
+
+/* ---------- slepen ---------- */
+.spook {
+  position: fixed; left: 0; top: 0; width: 104px; height: 104px; border-radius: 18px; pointer-events: none; z-index: 50;
+  background-size: cover; background-position: center; background-color: #2E3038;
+  box-shadow: 0 24px 50px rgba(0,0,0,.55), 0 0 0 2px var(--gloed); display: none;
+}
+.spook.zichtbaar { display: block; }
+.spook.terugveer { transition: transform .25s ease-in, opacity .25s; opacity: 0; }
+
+.wenkbalk {
+  position: fixed; left: 50%; top: max(18px, env(safe-area-inset-top)); transform: translate(-50%, -160%);
+  background: #2A2B31; border: 1px solid rgba(255,181,71,.4); border-radius: 999px; padding: 8px 8px 8px 20px;
+  display: flex; align-items: center; gap: 14px; font-size: 15px; font-weight: 600; z-index: 40;
+  box-shadow: 0 18px 40px rgba(0,0,0,.45); transition: transform .3s cubic-bezier(.3,1.3,.5,1); white-space: nowrap;
+}
+.wenkbalk.zichtbaar { transform: translate(-50%, 0); }
+.wenkbalk button { border: 0; border-radius: 999px; padding: 9px 16px; background: rgba(255,255,255,.1); font-weight: 600; cursor: pointer; }
+
+.melding {
+  position: fixed; left: 50%; top: max(18px, env(safe-area-inset-top)); transform: translate(-50%, -160%);
+  background: #2A2B31; border: 1px solid var(--rand); border-radius: 999px; padding: 8px 8px 8px 20px; z-index: 60;
+  display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 600; box-shadow: 0 18px 40px rgba(0,0,0,.45);
+  transition: transform .3s cubic-bezier(.3,1.3,.5,1); white-space: nowrap; max-width: 92vw;
+}
+.melding.zichtbaar { transform: translate(-50%, 0); }
+.melding span { overflow: hidden; text-overflow: ellipsis; }
+.melding button { border: 0; border-radius: 999px; padding: 8px 14px; background: rgba(255,181,71,.18); color: var(--gloed2); font-weight: 700; cursor: pointer; }
+.melding.alleen { padding-right: 20px; }
+.melding.alleen button { display: none; }
+
+.storing { position: fixed; inset: auto 0 0; padding: 10px; text-align: center; font-size: 13px; color: #1B1408; background: var(--gloed); display: none; z-index: 70; }
+.storing.zichtbaar { display: block; }
+
+/* ---------- telefoon / smal ---------- */
+@media (max-width: 1000px) {
+  .wekker { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: minmax(0, 1fr) auto; row-gap: 10px; padding: 12px 12px 12px 16px; }
+  .wekker .links { display: contents; }
+  .wekker .boven { grid-column: 1; grid-row: 1; align-self: center; gap: 10px; }
+  .wekker .dagen { grid-column: 1 / -1; grid-row: 2; flex-wrap: nowrap; justify-content: space-between; }
+  .wekker .tijd b { font-size: 32px; }
+  .wekker .tijd small { display: none; }
+  .wekkerplek { grid-column: 2; grid-row: 1; width: 104px; max-height: 104px; }
+  .dag { width: 30px; height: 30px; font-size: 11px; }
+}
+@media (max-width: 760px) {
+  .wekkers { grid-template-rows: repeat(4, 150px); }
+  body { overflow: auto; }
+  .app { height: auto; min-height: 100dvh; }
+  main { grid-template-columns: 1fr; }
+  .rijen { grid-template-rows: repeat(4, 120px); }
+  .lijst { max-height: 60vh; }
+  h1 { font-size: 30px; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div>
+      <h1>Mijn <span>knop</span></h1>
+      <p class="onder">Sleep een liedje naar een plek. Kort of lang drukken, jij kiest.</p>
+    </div>
+    <div class="rechts">
+      <div class="nu" id="nu">
+        <div class="wat"><b id="nuTitel"></b><small id="nuArtiest"></small></div>
+        <button class="rond" id="nuKnop" aria-label="Pauze"></button>
+      </div>
+      <div class="schakel" id="speakers" aria-label="Waar speelt de knop?"></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="paneel" aria-label="De knop">
+      <div class="paneel-kop">
+        <div class="tabs" role="tablist">
+          <button role="tab" class="aan" data-tab="knop">De knop</button>
+          <button role="tab" data-tab="wekkers">Wekkers</button>
+        </div>
+        <span class="klein" id="tabUitleg">aan de muur</span>
+      </div>
+      <div class="tabblad" id="tab-knop">
+      <div class="kolomkop">
+        <span></span>
+        <span><i style="width:10px"></i>Kort drukken</span>
+        <span><i style="width:26px"></i>Lang drukken</span>
+      </div>
+      <div class="slaapt" id="slaapt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg><span>De knop slaapt tot <b id="slaaptTot"></b>. Liedjes klaarzetten mag wel.</span></div>
+      <div class="rijen" id="rijen"></div>
+      <div class="tip">
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>Nog een keer drukken = pauze</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 12a8 8 0 1 1-3-6.2"/><path d="M20 4v5h-5"/></svg>Draaien = harder of zachter</span>
+      </div>
+      </div>
+      <div class="tabblad" id="tab-wekkers" hidden>
+        <div class="wekkers" id="wekkers"></div>
+        <div class="tip"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M5 3 2 6M19 3l3 3"/></svg>Speelt zacht en stopt na het liedje. Tijden 05:00 tot 21:00.</span></div>
+      </div>
+    </section>
+
+    <section class="paneel" aria-label="Liedje toevoegen">
+      <div class="paneel-kop"><h2>Liedje toevoegen</h2><span class="klein">uit je eigen Spotify</span></div>
+      <ol class="stappen">
+        <li><b>1</b><span>Open Spotify en tik op <em>•••</em> bij een liedje</span></li>
+        <li><b>2</b><span>Tik op <em>Delen</em> en dan <em>Link kopiëren</em></span></li>
+        <li><b>3</b><span>Kom terug, tik in het vak hieronder en kies <em>Plakken</em></span></li>
+      </ol>
+      <form class="plak" id="plak" autocomplete="off">
+        <input id="plakVeld" type="url" inputmode="url" placeholder="Tik hier en kies Plakken" aria-label="Spotify-link">
+        <button type="submit">Zoek</button>
+      </form>
+      <div class="gevonden" id="gevonden"></div>
+      <div class="paneel-kop tussen"><h2>Eerder toegevoegd</h2><span class="klein">houd vast en sleep</span></div>
+      <div class="lijst" id="lijst"></div>
+    </section>
+  </main>
+</div>
+
+<div class="spook" id="spook"></div>
+<div class="wenkbalk" id="wenkbalk"><span>Tik nu op een plek bij de knop</span><button id="stopKiezen">Laat maar</button></div>
+<div class="melding" id="melding"><span id="meldingTekst"></span><button id="meldingKnop">Terugzetten</button></div>
+<div class="storing" id="storing">Even geen verbinding met thuis. Ben je op de wifi?</div>
+
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const SOORT = { track: "Liedje", episode: "Aflevering", album: "Album", playlist: "Afspeellijst", show: "Podcast" };
+const ICOON = {
+  speel: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>',
+  pauze: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1.5"/><rect x="14" y="4" width="5" height="16" rx="1.5"/></svg>',
+  weg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+};
+const LEEG_HOES = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><rect width="10" height="10" fill="#2E3038"/><circle cx="5" cy="5" r="2.2" fill="none" stroke="#55575f" stroke-width=".6"/></svg>');
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+let staat = null;          // laatste /api/plekken
+let items = [];            // eerder toegevoegde liedjes
+let gekozen = null;        // item na een tik (tik-dan-plek)
+let bezig = false;         // tijdens slepen niet verversen
+
+async function api(pad, opties = {}) {
+  const r = await fetch(pad, { headers: { "Content-Type": "application/json" }, ...opties,
+                                body: opties.body ? JSON.stringify(opties.body) : undefined });
+  if (!r.ok) throw new Error(r.status);
+  return r.json();
+}
+
+/* ---------- knop-plekken ---------- */
+function bouwRijen() {
+  const rijen = $("#rijen");
+  for (let k = 1; k <= 4; k++) {
+    const rij = document.createElement("div");
+    rij.className = "rij";
+    rij.innerHTML = `<div class="knopje" aria-label="Knop ${k}"><div class="stippen ${k === 1 ? "een" : ""}">${"<b></b>".repeat(k)}</div></div>
+      <div class="plek" data-n="${k}"></div><div class="plek" data-n="${k + 4}"></div>`;
+    rijen.append(rij);
+  }
+}
+
+function tekenPlek(p, nu) {
+  const el = $(`.plek[data-n="${p.nummer}"]`);
+  const speelt = nu.plek === p.nummer && nu.staat === "playing" && p.vol;
+  const sleutel = JSON.stringify([p.spotify, p.naam, p.hoesje, speelt]);
+  if (el.dataset.sleutel === sleutel) return;
+  el.dataset.sleutel = sleutel;
+  el.classList.toggle("vol", p.vol);
+  el.classList.toggle("speelt", speelt);
+  const knop = p.nummer > 4 ? p.nummer - 4 : p.nummer;
+  const hoe = p.nummer > 4 ? "lang" : "kort";
+  el.setAttribute("aria-label", `Knop ${knop} ${hoe} drukken${p.vol ? ": " + p.naam : ", leeg"}`);
+  if (!p.vol) {
+    el.innerHTML = `<div class="leeg">${ICOON.plus}Sleep hier iets heen</div>`;
+    return;
+  }
+  el.innerHTML = `<div class="binnen">
+      <img class="hoes" data-sleep-plek="${p.nummer}" src="${esc(p.hoesje || LEEG_HOES)}" alt="" draggable="false">
+      <div class="tekst">
+        <div class="naam" data-actie="naam" aria-label="Naam aanpassen">${esc(p.naam)}</div>
+        <div class="soort"><span class="golf"><i></i><i></i><i></i></span>${speelt ? "Speelt nu" : SOORT[p.soort] || ""}</div>
+        <div class="knoppen">
+          <button class="mini" data-actie="speel" aria-label="${speelt ? "Pauze" : "Probeer"}">${speelt ? ICOON.pauze : ICOON.speel}</button>
+          <button class="mini" data-actie="weg" aria-label="Haal weg">${ICOON.weg}</button>
+        </div>
+      </div></div>`;
+}
+
+function tekenAlles() {
+  if (!staat) return;
+  staat.plekken.forEach(p => tekenPlek(p, staat.nu));
+  document.body.classList.toggle("rust", !!staat.rust);
+  $("#slaaptTot").textContent = staat.rust_tot;
+  // speakers
+  const sp = $("#speakers");
+  const sk = staat.speakers.map(s => s.id + (s.id === staat.speaker)).join();
+  if (sp.dataset.sleutel !== sk) {
+    sp.dataset.sleutel = sk;
+    sp.innerHTML = staat.speakers.map(s => `<button data-speaker="${s.id}" class="${s.id === staat.speaker ? "aan" : ""}">${esc(s.naam)}</button>`).join("");
+  }
+  // wat speelt er
+  const nu = staat.nu, zie = (nu.staat === "playing" || nu.staat === "paused") && nu.titel;
+  $("#nu").classList.toggle("zichtbaar", !!zie && !(staat.rust && nu.staat === "paused"));
+  $("#nuTitel").textContent = nu.titel;
+  $("#nuArtiest").textContent = nu.staat === "paused" ? "Op pauze" : nu.artiest;
+  $("#nuKnop").innerHTML = nu.staat === "playing" ? ICOON.pauze : ICOON.speel;
+  $("#nuKnop").setAttribute("aria-label", nu.staat === "playing" ? "Pauze" : "Verder");
+}
+
+async function ververs() {
+  if (bezig) return;
+  try {
+    staat = await api("/api/plekken");
+    $("#storing").classList.remove("zichtbaar");
+    tekenAlles();
+  } catch (e) {
+    $("#storing").classList.add("zichtbaar");
+  }
+}
+
+function plekData(n) { return staat?.plekken.find(p => p.nummer === n); }
+
+async function zetOpPlek(n, item) {
+  const oud = plekData(n);
+  const el = $(`.plek[data-n="${n}"]`);
+  // meteen laten zien, server volgt
+  Object.assign(oud, { vol: true, spotify: item.spotify, naam: item.titel.slice(0, 40), soort: item.soort, hoesje: item.hoesje });
+  tekenPlek(oud, staat.nu);
+  el.classList.remove("plop"); void el.offsetWidth; el.classList.add("plop");
+  try {
+    await api(`/api/plek/${n}`, { method: "POST", body: { spotify: item.spotify, naam: item.titel, hoesje: item.hoesje } });
+    const knop = n > 4 ? n - 4 : n;
+    meld(`Op knop ${knop}, ${n > 4 ? "lang" : "kort"} drukken`);
+    $("#gevonden").classList.remove("zichtbaar");
+    laadLijst();
+  } catch (e) { meld("Dat lukte niet. Probeer nog eens.", null); }
+  ververs();
+}
+
+async function haalWeg(n) {
+  const oud = { ...plekData(n) };
+  try {
+    await api(`/api/plek/${n}`, { method: "DELETE" });
+    meld(`${oud.naam} is weg`, async () => {
+      await api(`/api/plek/${n}`, { method: "POST", body: { spotify: oud.spotify, naam: oud.naam, hoesje: oud.hoesje } });
+      ververs();
+    });
+  } catch (e) { meld("Dat lukte niet.", null); }
+  ververs();
+}
+
+async function wissel(a, b) {
+  const pa = plekData(a), pb = plekData(b);
+  for (const k of ["vol", "spotify", "naam", "soort", "hoesje"]) [pa[k], pb[k]] = [pb[k], pa[k]];
+  tekenPlek(pa, staat.nu); tekenPlek(pb, staat.nu);
+  try { await api("/api/wissel", { method: "POST", body: { a, b } }); } catch (e) { meld("Dat lukte niet.", null); }
+  ververs();
+}
+
+/* ---------- wekkers ---------- */
+const DAGEN = [["ma", "M"], ["di", "D"], ["wo", "W"], ["do", "D"], ["vr", "V"], ["za", "Z"], ["zo", "Z"]];
+const DAGNAAM = { ma: "maandag", di: "dinsdag", wo: "woensdag", do: "donderdag", vr: "vrijdag", za: "zaterdag", zo: "zondag" };
+let wstaat = null;
+
+function zetOp(doel, item) {
+  if (doel.dataset.w) zetWekkerLiedje(+doel.dataset.w, item);
+  else zetOpPlek(+doel.dataset.n, item);
+}
+
+function dagdeel(t) { const u = +t.slice(0, 2); return u < 12 ? "wekker" : u < 18 ? "middag" : "slaapliedje"; }
+
+function tekenWekker(w) {
+  let el = $(`.wekker[data-k="${w.nummer}"]`);
+  if (!el) {
+    el = document.createElement("div");
+    el.className = "wekker"; el.dataset.k = w.nummer;
+    $("#wekkers").append(el);
+  }
+  if (el.contains(document.activeElement) && document.activeElement.tagName === "INPUT") return;  // tijdkiezer open
+  const sleutel = JSON.stringify(w);
+  if (el.dataset.sleutel === sleutel) return;
+  el.dataset.sleutel = sleutel;
+  const aan = w.aan && w.vol;
+  el.classList.toggle("aan", aan);
+  const lied = w.vol
+    ? `<div class="binnen"><img class="hoes" src="${esc(w.hoesje || LEEG_HOES)}" alt="" draggable="false">
+        <div class="naam">${esc(w.naam)}</div>
+        <div class="knoppen"><button class="mini" data-wactie="probeer" aria-label="Probeer">${ICOON.speel}</button>
+        <button class="mini" data-wactie="weg" aria-label="Haal weg">${ICOON.weg}</button></div></div>`
+    : `<div class="leeg">${ICOON.plus}Sleep hier een liedje heen</div>`;
+  el.innerHTML = `<div class="links">
+      <div class="boven">
+        <label class="tijd"><b>${esc(w.tijd)}</b><small>${dagdeel(w.tijd)}</small>
+          <input type="time" value="${esc(w.tijd)}" min="${wstaat.vroegst}" max="${wstaat.laatst}" step="300" aria-label="Tijd wekker ${w.nummer}"></label>
+        <button class="schuif" role="switch" aria-checked="${aan}" data-wactie="aan" ${w.vol ? "" : "disabled"} aria-label="Wekker aan of uit"><i></i></button>
+      </div>
+      <div class="dagen">${DAGEN.map(([d, l]) => `<button class="dag ${w.dagen.includes(d) ? "aan" : ""}" data-dag="${d}" aria-label="${DAGNAAM[d]}" aria-pressed="${w.dagen.includes(d)}">${l}</button>`).join("")}</div>
+    </div>
+    <div class="plek wekkerplek ${w.vol ? "vol" : ""}" data-w="${w.nummer}">${lied}</div>`;
+  el.querySelector("input").addEventListener("change", e => zetTijd(w.nummer, e.target.value));
+}
+
+async function laadWekkers() {
+  try { wstaat = await api("/api/wekkers"); } catch (e) { return; }
+  wstaat.wekkers.forEach(tekenWekker);
+}
+function wData(k) { return wstaat.wekkers.find(w => w.nummer === k); }
+
+async function wekkerPost(k, body, tekst) {
+  try { await api(`/api/wekker/${k}`, { method: "POST", body }); if (tekst) meld(tekst); }
+  catch (e) { meld(e.message === "400" ? `Kies een tijd tussen ${wstaat.vroegst} en ${wstaat.laatst}` : "Dat lukte niet.", null); }
+  laadWekkers();
+}
+
+function zetTijd(k, t) {
+  if (!t) return;
+  t = t.slice(0, 5);
+  if (t < wstaat.vroegst || t > wstaat.laatst) { meld(`Kies een tijd tussen ${wstaat.vroegst} en ${wstaat.laatst}`, null); laadWekkers(); return; }
+  const w = wData(k); w.tijd = t;
+  $(`.wekker[data-k="${k}"]`).dataset.sleutel = ""; document.activeElement?.blur(); tekenWekker(w);
+  wekkerPost(k, { tijd: t }, w.aan && w.vol ? `Wekker staat om ${t}` : null);
+}
+
+async function zetWekkerLiedje(k, item) {
+  const w = wData(k);
+  Object.assign(w, { vol: true, aan: true, spotify: item.spotify, naam: item.titel.slice(0, 40), soort: item.soort, hoesje: item.hoesje });
+  tekenWekker(w);
+  const el = $(`.wekker[data-k="${k}"] .wekkerplek`); el.classList.remove("plop"); void el.offsetWidth; el.classList.add("plop");
+  await wekkerPost(k, { spotify: item.spotify, naam: item.titel, hoesje: item.hoesje }, `Wekker om ${w.tijd} speelt ${w.naam}`);
+  $("#gevonden").classList.remove("zichtbaar");
+  laadLijst();
+}
+
+async function wekkerKlik(t, k) {
+  const w = wData(k);
+  const dag = t.closest("[data-dag]");
+  if (dag) {
+    const d = dag.dataset.dag;
+    w.dagen = w.dagen.includes(d) ? w.dagen.filter(x => x !== d) : [...w.dagen, d];
+    tekenWekker(w);
+    wekkerPost(k, { dagen: w.dagen });
+    return true;
+  }
+  const a = t.closest("[data-wactie]");
+  if (!a) return false;
+  if (a.dataset.wactie === "aan") {
+    if (!w.vol) { meld("Sleep eerst een liedje naar deze wekker", null); return true; }
+    w.aan = !w.aan; tekenWekker(w);
+    wekkerPost(k, { aan: w.aan }, w.aan ? `Wekker aan, om ${w.tijd}` : "Wekker uit");
+  } else if (a.dataset.wactie === "probeer") {
+    try { await api(`/api/wekker/${k}/probeer`, { method: "POST" }); meld("Zo klinkt je wekker"); } catch (e) { meld("Dat lukte niet.", null); }
+    setTimeout(ververs, 1500);
+  } else if (a.dataset.wactie === "weg") {
+    const oud = { ...w };
+    await wekkerPost(k, { leeg: true });
+    meld("Liedje van de wekker is weg", async () => {
+      await wekkerPost(k, { spotify: oud.spotify, naam: oud.naam, hoesje: oud.hoesje, aan: oud.aan });
+    });
+  }
+  return true;
+}
+
+function toonTab(naam) {
+  document.querySelectorAll("[data-tab]").forEach(b => b.classList.toggle("aan", b.dataset.tab === naam));
+  $("#tab-knop").hidden = naam !== "knop";
+  $("#tab-wekkers").hidden = naam !== "wekkers";
+  $("#tabUitleg").textContent = naam === "knop" ? "aan de muur" : "in je kamer";
+  $(".onder").textContent = naam === "knop" ? "Sleep een liedje naar een plek. Kort of lang drukken, jij kiest."
+                                            : "Kies zelf de tijd. 's Ochtends wakker worden, 's avonds een slaapliedje of Breinbaas.";
+  if (naam === "wekkers") laadWekkers();
+}
+
+/* ---------- naam aanpassen ---------- */
+function bewerkNaam(n, el) {
+  const p = plekData(n);
+  bezig = true;
+  const veld = document.createElement("input");
+  veld.className = "naamveld"; veld.maxLength = 40; veld.value = p.naam; veld.enterKeyHint = "done";
+  el.replaceWith(veld);
+  veld.focus(); veld.select();
+  let klaar = false;
+  const opslaan = async bewaar => {
+    if (klaar) return; klaar = true;
+    const nieuw = veld.value.trim();
+    bezig = false;
+    if (bewaar && nieuw && nieuw !== p.naam) {
+      p.naam = nieuw;
+      try { await api(`/api/plek/${n}/naam`, { method: "POST", body: { naam: nieuw } }); meld("Naam aangepast"); }
+      catch (e) { meld("Dat lukte niet.", null); }
+    }
+    $(`.plek[data-n="${n}"]`).dataset.sleutel = "";
+    tekenPlek(p, staat.nu);
+    ververs();
+  };
+  veld.addEventListener("keydown", e => { if (e.key === "Enter") veld.blur(); if (e.key === "Escape") opslaan(false); });
+  veld.addEventListener("blur", () => opslaan(true));
+}
+
+/* ---------- meldingen ---------- */
+let meldTimer;
+function meld(tekst, terug) {
+  const m = $("#melding");
+  $("#meldingTekst").textContent = tekst;
+  m.classList.toggle("alleen", !terug);
+  $("#meldingKnop").onclick = async () => { m.classList.remove("zichtbaar"); if (terug) await terug(); };
+  m.classList.add("zichtbaar");
+  clearTimeout(meldTimer);
+  meldTimer = setTimeout(() => m.classList.remove("zichtbaar"), terug ? 6000 : 2600);
+}
+
+/* ---------- eerder toegevoegd ---------- */
+function kaartHtml(it, i) {
+  return `<div class="kaart" data-i="${i}">
+    <img class="hoes" src="${esc(it.hoesje || LEEG_HOES)}" alt="" draggable="false" loading="lazy">
+    <div class="titel">${esc(it.titel)}</div><div class="soort">${SOORT[it.soort] || ""}</div></div>`;
+}
+
+async function laadLijst() {
+  let r;
+  try { r = await api("/api/eerder"); } catch (e) { return; }
+  const sleutel = JSON.stringify(r.items.map(x => x.spotify));
+  if ($("#lijst").dataset.sleutel === sleutel) return;
+  $("#lijst").dataset.sleutel = sleutel;
+  items = r.items;
+  $("#lijst").innerHTML = items.length ? items.map(kaartHtml).join("")
+    : `<div class="leegte">Hier komen de liedjes die je plakt.<br>Zo zet je ze later makkelijk opnieuw op een knop.</div>`;
+}
+
+/* ---------- tik: kiezen, dan plek ---------- */
+function kies(item, kaartEl) {
+  gekozen = item;
+  document.querySelectorAll(".kaart.gekozen").forEach(k => k.classList.remove("gekozen"));
+  kaartEl?.classList.add("gekozen");
+  document.body.classList.add("kiezen");
+  $("#wenkbalk").classList.add("zichtbaar");
+}
+function stopKiezen() {
+  gekozen = null;
+  document.querySelectorAll(".kaart.gekozen").forEach(k => k.classList.remove("gekozen"));
+  document.body.classList.remove("kiezen");
+  $("#wenkbalk").classList.remove("zichtbaar");
+}
+
+/* ---------- slepen (vinger en muis) ---------- */
+const spook = $("#spook");
+let greep = null;   // {x0,y0,el,bron,timer,actief,doel}
+
+function itemVan(el) {
+  if (el.dataset.sleepPlek) {
+    const p = plekData(+el.dataset.sleepPlek);
+    return p?.vol ? { plek: p.nummer, spotify: p.spotify, titel: p.naam, soort: p.soort, hoesje: p.hoesje } : null;
+  }
+  const k = el.closest(".kaart");
+  if (!k) return null;
+  return k.closest("#gevonden") ? gevondenItem : items[+k.dataset.i];
+}
+
+function begin(e) {
+  const el = e.target.closest(".kaart, [data-sleep-plek]");
+  if (!el || e.button > 0 || e.target.closest("button")) return;
+  const item = itemVan(el);
+  if (!item) return;
+  greep = { x0: e.clientX, y0: e.clientY, x: e.clientX, y: e.clientY, el, item, id: e.pointerId, actief: false, muis: e.pointerType === "mouse" };
+  if (!greep.muis) greep.timer = setTimeout(() => start(), 230);
+}
+
+function start() {
+  if (!greep || greep.actief) return;
+  greep.actief = true; bezig = true;
+  navigator.vibrate?.(10);
+  const kaart = greep.el.closest(".kaart");
+  kaart?.classList.add("weg");
+  spook.style.backgroundImage = `url("${greep.item.hoesje || LEEG_HOES}")`;
+  spook.classList.remove("terugveer");
+  spook.classList.add("zichtbaar");
+  zetSpook(greep.x, greep.y);
+}
+
+function zetSpook(x, y) {
+  spook.style.transform = `translate(${x - 52}px, ${y - 70}px) rotate(-4deg) scale(1.04)`;
+}
+
+function beweeg(e) {
+  if (!greep || e.pointerId !== greep.id) return;
+  greep.x = e.clientX; greep.y = e.clientY;
+  const ver = Math.hypot(e.clientX - greep.x0, e.clientY - greep.y0);
+  if (!greep.actief) {
+    if (greep.muis && ver > 6) start();
+    else if (!greep.muis && ver > 10) { clearTimeout(greep.timer); greep = null; } // gewoon scrollen
+    return;
+  }
+  zetSpook(e.clientX, e.clientY);
+  const doel = document.elementFromPoint(e.clientX, e.clientY)?.closest(".plek");
+  if (doel !== greep.doel) {
+    greep.doel?.classList.remove("doel");
+    doel?.classList.add("doel");
+    greep.doel = doel;
+  }
+}
+
+function los(e) {
+  if (!greep || (e && e.pointerId !== greep.id)) return;
+  const g = greep; greep = null;
+  clearTimeout(g.timer);
+  if (!g.actief) {                                  // het was een tik
+    if (e && e.type === "pointerup") tik(g);
+    return;
+  }
+  g.doel?.classList.remove("doel");
+  g.el.closest(".kaart")?.classList.remove("weg");
+  if (g.doel && e?.type === "pointerup") {
+    const n = +g.doel.dataset.n;
+    spook.classList.remove("zichtbaar");
+    if (g.item.plek && n) { if (g.item.plek !== n) wissel(g.item.plek, n); }
+    else zetOp(g.doel, g.item);
+    stopKiezen();
+  } else {
+    spook.classList.add("terugveer");
+    setTimeout(() => spook.classList.remove("zichtbaar", "terugveer"), 260);
+  }
+  bezig = false;
+}
+
+function tik(g) {
+  if (g.item.plek) return;                          // tik op hoesje bij de knop: niets
+  if (gekozen === g.item) stopKiezen(); else kies(g.item, g.el.closest(".kaart"));
+}
+
+document.addEventListener("pointerdown", begin);
+document.addEventListener("pointermove", beweeg);
+document.addEventListener("pointerup", los);
+document.addEventListener("pointercancel", los);
+// tijdens slepen niet laten scrollen (iPad)
+document.addEventListener("touchmove", e => { if (greep?.actief) e.preventDefault(); }, { passive: false });
+document.addEventListener("contextmenu", e => { if (e.target.closest(".kaart, .plek")) e.preventDefault(); });
+
+/* ---------- klikken ---------- */
+document.addEventListener("click", async e => {
+  const t = e.target;
+  const sp = t.closest("[data-speaker]");
+  if (sp) {
+    staat.speaker = sp.dataset.speaker; tekenAlles();
+    try { await api("/api/speaker", { method: "POST", body: { speaker: sp.dataset.speaker } }); } catch (_) {}
+    ververs(); return;
+  }
+  const tab = t.closest("[data-tab]");
+  if (tab) { toonTab(tab.dataset.tab); return; }
+  const w = t.closest(".wekker");
+  if (w && await wekkerKlik(t, +w.dataset.k)) return;
+  const actie = t.closest("[data-actie]");
+  if (actie) {
+    const n = +actie.closest(".plek").dataset.n;
+    if (actie.dataset.actie === "naam") { if (!gekozen) bewerkNaam(n, actie); else zetOpPlek(n, gekozen), stopKiezen(); }
+    else if (actie.dataset.actie === "weg") haalWeg(n);
+    else {
+      try { await api(`/api/plek/${n}/speel`, { method: "POST" }); } catch (_) { meld("Dat lukte niet.", null); }
+      setTimeout(ververs, 1200); setTimeout(ververs, 3500);
+    }
+    return;
+  }
+  const plek = t.closest(".plek");
+  if (plek && gekozen) { const it = gekozen; zetOp(plek, it); stopKiezen(); return; }
+});
+$("#stopKiezen").onclick = stopKiezen;
+$("#nuKnop").onclick = async () => {
+  try { await api("/api/pauze", { method: "POST" }); } catch (_) {}
+  setTimeout(ververs, 700);
+};
+
+/* ---------- link plakken (en slepen vanuit de Spotify-app) ---------- */
+let gevondenItem = null;
+async function zoekLink(tekst) {
+  const g = $("#gevonden");
+  const r = await api(`/api/link?u=${encodeURIComponent(tekst.trim())}`).catch(() => ({ ok: false }));
+  if (!r.ok) { meld("Dat is geen Spotify-link", null); return null; }
+  gevondenItem = { spotify: r.spotify, soort: r.soort, titel: r.titel || "Liedje", hoesje: r.hoesje };
+  g.innerHTML = `<div class="kaart"><img class="hoes" src="${esc(r.hoesje || LEEG_HOES)}" alt="" draggable="false">
+    <div><div class="titel">${esc(gevondenItem.titel)}</div><div class="soort">${SOORT[r.soort] || ""} · sleep naar de knop</div></div></div>`;
+  g.classList.add("zichtbaar");
+  laadLijst();
+  return gevondenItem;
+}
+$("#plak").onsubmit = async e => {
+  e.preventDefault();
+  const v = $("#plakVeld").value;
+  if (!v.trim()) return;
+  $("#plakVeld").blur();
+  const it = await zoekLink(v);
+  if (it) { $("#plakVeld").value = ""; kies(it, $("#gevonden .kaart")); }
+};
+$("#plakVeld").addEventListener("paste", () => setTimeout(() => $("#plak").requestSubmit(), 30));
+
+function linkUitDrop(e) {
+  const d = e.dataTransfer;
+  return d && (d.getData("text/uri-list") || d.getData("text/plain") || d.getData("URL"));
+}
+document.addEventListener("dragover", e => {
+  if (greep) return;
+  e.preventDefault();
+  const doel = e.target.closest?.(".plek");
+  document.querySelectorAll(".plek.doel").forEach(p => p !== doel && p.classList.remove("doel"));
+  doel?.classList.add("doel");
+});
+document.addEventListener("dragleave", e => { if (!e.relatedTarget) document.querySelectorAll(".plek.doel").forEach(p => p.classList.remove("doel")); });
+document.addEventListener("drop", async e => {
+  e.preventDefault();
+  document.querySelectorAll(".plek.doel").forEach(p => p.classList.remove("doel"));
+  const tekst = linkUitDrop(e);
+  if (!tekst) return;
+  const it = await zoekLink(tekst);
+  const plek = e.target.closest?.(".plek");
+  if (it && plek) { zetOp(plek, it); $("#gevonden").classList.remove("zichtbaar"); }
+  else if (it) kies(it, $("#gevonden .kaart"));
+});
+
+/* ---------- start ---------- */
+bouwRijen();
+ververs();
+laadLijst();
+setInterval(() => { if (!document.hidden) { ververs(); if (!$("#tab-wekkers").hidden) laadWekkers(); } }, 4000);
+laadWekkers();
+document.addEventListener("visibilitychange", () => { if (!document.hidden) ververs(); });
+</script>
+</body>
+</html>

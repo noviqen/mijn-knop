@@ -1,0 +1,105 @@
+{
+ "id": "knop_kind",
+ "alias": "Knop het kind (Hue Tap Dial)",
+ "description": "Knop 1-4 kort = plek 1-4, lang = plek 5-8. Zelfde knop nog eens = pauze/verder. Draaien = harder/zachter (max 60%). Rusttijd (binary_sensor.knop_kind_rusttijd): knoppen alleen pauze, draaien alleen zachter.",
+ "triggers": [
+  {
+   "trigger": "state",
+   "entity_id": [
+    "event.hue_tap_dial_switch_1_knop_1",
+    "event.hue_tap_dial_switch_1_knop_2",
+    "event.hue_tap_dial_switch_1_knop_3",
+    "event.hue_tap_dial_switch_1_knop_4"
+   ],
+   "id": "knop"
+  },
+  {
+   "trigger": "state",
+   "entity_id": "event.hue_tap_dial_switch_1_draaiknop",
+   "id": "draai"
+  }
+ ],
+ "conditions": [
+  {
+   "condition": "template",
+   "value_template": "{{ trigger.from_state is not none and trigger.from_state.state not in ['unavailable'] }}"
+  }
+ ],
+ "actions": [
+  {
+   "choose": [
+    {
+     "conditions": [
+      {
+       "condition": "trigger",
+       "id": "knop"
+      },
+      {
+       "condition": "template",
+       "value_template": "{{ trigger.to_state.attributes.event_type == 'short_release' }}"
+      }
+     ],
+     "sequence": [
+      {
+       "action": "script.kind_knop",
+       "data": {
+        "nummer": "{{ trigger.entity_id[-1] | int }}"
+       }
+      }
+     ]
+    },
+    {
+     "conditions": [
+      {
+       "condition": "trigger",
+       "id": "knop"
+      },
+      {
+       "condition": "template",
+       "value_template": "{{ trigger.to_state.attributes.event_type == 'long_press' }}"
+      }
+     ],
+     "sequence": [
+      {
+       "action": "script.kind_knop",
+       "data": {
+        "nummer": "{{ (trigger.entity_id[-1] | int) + 4 }}"
+       }
+      }
+     ]
+    },
+    {
+     "conditions": [
+      {
+       "condition": "trigger",
+       "id": "draai"
+      },
+      {
+       "condition": "template",
+       "value_template": "{{ trigger.to_state.attributes.event_type != 'clock_wise' or is_state('binary_sensor.knop_kind_rusttijd', 'off') }}"
+      }
+     ],
+     "sequence": [
+      {
+       "variables": {
+        "nu": "{{ state_attr(states('input_select.knop_kind_speaker'),'volume_level') | float(0.2) }}",
+        "stap": "{{ 0.03 if trigger.to_state.attributes.event_type == 'clock_wise' else -0.03 }}"
+       }
+      },
+      {
+       "action": "media_player.volume_set",
+       "target": {
+        "entity_id": "{{ states(\"input_select.knop_kind_speaker\") }}"
+       },
+       "data": {
+        "volume_level": "{{ [0, [0.6, (nu + stap)] | min] | max | round(2) }}"
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "mode": "queued",
+ "max": 10
+}

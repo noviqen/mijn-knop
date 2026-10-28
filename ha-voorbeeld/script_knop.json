@@ -1,0 +1,140 @@
+{
+ "alias": "het kind knop",
+ "icon": "mdi:music-circle",
+ "mode": "restart",
+ "description": "Plek 1-4 = kort drukken op knop 1-4, plek 5-8 = lang drukken. Zelfde knop nog eens = pauze / verder. Tijdens binary_sensor.knop_kind_rusttijd (doordeweeks 21-07, weekend 22-09) start er niets; drukken zet dan alleen op pauze. Liedje vervangt de wachtrij en herhaalt niet: als het klaar is stopt hij.",
+ "fields": {
+  "nummer": {
+   "name": "Plek",
+   "description": "1 t/m 8",
+   "required": true,
+   "selector": {
+    "number": {
+     "min": 1,
+     "max": 8
+    }
+   }
+  }
+ },
+ "sequence": [
+  {
+   "variables": {
+    "link": "{{ states('input_text.kind_knop_' ~ (nummer|int)) | trim }}",
+    "m": "{{ link | regex_findall('(track|episode|album|playlist|show)[/:]([A-Za-z0-9]{22})') }}",
+    "speaker": "{{ states('input_select.knop_kind_speaker') }}",
+    "staat": "{{ states(states('input_select.knop_kind_speaker')) }}",
+    "inhoud": "{{ state_attr(states('input_select.knop_kind_speaker'), 'media_content_id') | string }}",
+    "zelfde": "{{ (states('input_number.kind_knop_laatste') | int(0)) == (nummer | int) and m | length > 0 and (m[0][0] not in ['track','episode'] or m[0][1] in inhoud) }}",
+    "rust": "{{ is_state('binary_sensor.knop_kind_rusttijd', 'on') }}"
+   }
+  },
+  {
+   "condition": "template",
+   "value_template": "{{ m | length > 0 }}"
+  },
+  {
+   "choose": [
+    {
+     "conditions": [
+      {
+       "condition": "template",
+       "value_template": "{{ rust }}"
+      }
+     ],
+     "sequence": [
+      {
+       "if": [
+        {
+         "condition": "template",
+         "value_template": "{{ staat == 'playing' }}"
+        }
+       ],
+       "then": [
+        {
+         "action": "media_player.media_pause",
+         "target": {
+          "entity_id": "{{ speaker }}"
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "conditions": [
+      {
+       "condition": "template",
+       "value_template": "{{ zelfde and staat == 'playing' }}"
+      }
+     ],
+     "sequence": [
+      {
+       "action": "media_player.media_pause",
+       "target": {
+        "entity_id": "{{ states('input_select.knop_kind_speaker') }}"
+       }
+      }
+     ]
+    },
+    {
+     "conditions": [
+      {
+       "condition": "template",
+       "value_template": "{{ zelfde and staat == 'paused' }}"
+      }
+     ],
+     "sequence": [
+      {
+       "action": "media_player.media_play",
+       "target": {
+        "entity_id": "{{ states('input_select.knop_kind_speaker') }}"
+       }
+      }
+     ]
+    }
+   ],
+   "default": [
+    {
+     "action": "input_number.set_value",
+     "target": {
+      "entity_id": "input_number.kind_knop_laatste"
+     },
+     "data": {
+      "value": "{{ nummer | int }}"
+     }
+    },
+    {
+     "action": "media_player.repeat_set",
+     "target": {
+      "entity_id": "{{ speaker }}"
+     },
+     "data": {
+      "repeat": "off"
+     },
+     "continue_on_error": true
+    },
+    {
+     "action": "media_player.shuffle_set",
+     "target": {
+      "entity_id": "{{ speaker }}"
+     },
+     "data": {
+      "shuffle": false
+     },
+     "continue_on_error": true
+    },
+    {
+     "action": "media_player.play_media",
+     "target": {
+      "entity_id": "{{ states('input_select.knop_kind_speaker') }}"
+     },
+     "data": {
+      "media_content_id": "spotify://<SPOTIFY_ENTRY_ID>/spotify:{{ m[0][0] }}:{{ m[0][1] }}",
+      "media_content_type": "music",
+      "enqueue": "replace"
+     }
+    }
+   ]
+  }
+ ]
+}

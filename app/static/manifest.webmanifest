@@ -1,0 +1,12 @@
+{
+  "name": "Mijn knop",
+  "short_name": "Mijn knop",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#16171B",
+  "theme_color": "#1C1D22",
+  "icons": [
+    {"src": "/static/icoon-180.png", "sizes": "180x180", "type": "image/png"},
+    {"src": "/static/icoon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}

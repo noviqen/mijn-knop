@@ -1,0 +1,113 @@
+{
+ "alias": "het kind wekker",
+ "icon": "mdi:alarm",
+ "mode": "restart",
+ "description": "Speelt het liedje van het kind's wekker N (input_text.kind_wekker_N_link) in haar kamer, zacht (22%). Ingesteld via de app Mijn knop. Vervangt de wachtrij en herhaalt niet: na het liedje stopt hij.",
+ "fields": {
+  "nummer": {
+   "name": "Wekker",
+   "description": "1 t/m 4",
+   "required": true,
+   "selector": {
+    "number": {
+     "min": 1,
+     "max": 4
+    }
+   }
+  }
+ },
+ "sequence": [
+  {
+   "variables": {
+    "m": "{{ states('input_text.kind_wekker_' ~ (nummer|int) ~ '_link') | regex_findall('(track|episode|album|playlist|show)[/:]([A-Za-z0-9]{22})') }}"
+   }
+  },
+  {
+   "condition": "template",
+   "value_template": "{{ m | length > 0 }}"
+  },
+  {
+   "action": "media_player.unjoin",
+   "target": {
+    "entity_id": "media_player.kinderkamer"
+   },
+   "continue_on_error": true
+  },
+  {
+   "action": "media_player.volume_mute",
+   "target": {
+    "entity_id": "media_player.kinderkamer"
+   },
+   "data": {
+    "is_volume_muted": false
+   },
+   "continue_on_error": true
+  },
+  {
+   "action": "media_player.volume_set",
+   "target": {
+    "entity_id": "media_player.kinderkamer"
+   },
+   "data": {
+    "volume_level": 0.22
+   }
+  },
+  {
+   "action": "media_player.repeat_set",
+   "target": {
+    "entity_id": "media_player.kinderkamer"
+   },
+   "data": {
+    "repeat": "off"
+   },
+   "continue_on_error": true
+  },
+  {
+   "action": "media_player.shuffle_set",
+   "target": {
+    "entity_id": "media_player.kinderkamer"
+   },
+   "data": {
+    "shuffle": false
+   },
+   "continue_on_error": true
+  },
+  {
+   "action": "media_player.play_media",
+   "target": {
+    "entity_id": "media_player.kinderkamer"
+   },
+   "data": {
+    "media_content_id": "spotify://<SPOTIFY_ENTRY_ID>/spotify:{{ m[0][0] }}:{{ m[0][1] }}",
+    "media_content_type": "music",
+    "enqueue": "replace"
+   }
+  },
+  {
+   "wait_template": "{{ is_state('media_player.kinderkamer','playing') }}",
+   "timeout": "00:00:15",
+   "continue_on_timeout": true
+  },
+  {
+   "if": [
+    {
+     "condition": "template",
+     "value_template": "{{ not wait.completed }}"
+    }
+   ],
+   "then": [
+    {
+     "action": "media_player.play_media",
+     "target": {
+      "entity_id": "media_player.kinderkamer"
+     },
+     "data": {
+      "media_content_id": "spotify://<SPOTIFY_ENTRY_ID>/spotify:{{ m[0][0] }}:{{ m[0][1] }}",
+      "media_content_type": "music",
+      "enqueue": "replace"
+     }
+    }
+   ]
+  }
+ ]
+}
