@@ -1,0 +1,11 @@
+# Music Assistant (officiële image). Host-netwerk is nodig om Google Cast-, Sonos- en AirPlay-speakers te vinden.
+services:
+  music-assistant:
+    image: ghcr.io/music-assistant/server:latest
+    container_name: music-assistant
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ${MA_DATA:-~/.local/share/mijn-knop/music-assistant}:/data
+    environment:
+      - LOG_LEVEL=info

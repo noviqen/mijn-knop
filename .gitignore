@@ -1,3 +1,7 @@
-data/
+app/data/
+app/config.json
+.venv/
+homey/knop-ingevuld.js
 __pycache__/
 *.tmp
+data/

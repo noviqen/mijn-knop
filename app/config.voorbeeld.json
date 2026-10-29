@@ -1,0 +1,12 @@
+{
+ "poort": 8857,
+ "thuisnetwerk": ["192.168.0.0/16", "10.0.0.0/8", "172.16.0.0/12"],
+ "tijdzone": "Europe/Amsterdam",
+ "music_assistant": "http://127.0.0.1:8095",
+ "ma_token_bestand": "~/.config/mijn-knop/ma.token",
+ "speakers": [],
+ "max_volume": 60,
+ "wekker_volume": 22,
+ "volume_stap": 3,
+ "rust": {"vanaf": "21:00", "tot": "07:00", "vanaf_weekend": "22:00", "tot_weekend": "09:00"}
+}

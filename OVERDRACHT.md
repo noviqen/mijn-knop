@@ -1,86 +1,72 @@
-# Overdracht: "Mijn knop" op Homey zetten
+# Overdracht: "Mijn knop" installeren (voor de Claude van de nieuwe eigenaar)
 
-Voor de Claude (T3) van wie dit pakket krijgt. Lees dit helemaal voordat je bouwt.
-Dit is een werkende app die op Home Assistant draait. Jouw taak: dezelfde app laten werken met **Homey** en **Sonos** in jouw huis. Kijk eerst wat je eigenaar precies heeft (Homey-model, speakers, welke knop) en vraag niets wat je zelf kunt nakijken.
+Lees dit helemaal. Kijk eerst naar `demo/mijn-knop-demo.mp4`: zo hoort het eruit te zien en te werken.
+Vraag je eigenaar niets wat je zelf kunt nakijken. Werk stap voor stap en leg in gewone, korte taal uit wat je doet.
 
-Kijk eerst naar `demo/mijn-knop-demo.mp4`: zo hoort het eruit te zien en zo hoort het te werken.
-
----
-
-## 0. Eerst controleren (verplicht, vóór je iets bouwt)
-
-1. Draai `python3 controle.py` in deze map. Het script kijkt alleen en verandert niets. Het controleert Python, de pakketten, het thuisnetwerk, internet, de Sonos, of de app altijd kan blijven draaien, en of de poort vrij is.
-2. Staat er **FOUT** in de uitslag? Stop dan en leg je eigenaar in gewone woorden uit wat er mist en wat hij moet doen. Bouw niet verder.
-3. Kijk zelf na, of vraag als het niet anders kan:
-   - Heeft hij een **Homey Pro** met de app **HomeyScript**?
-   - Welke **knop** is het, en staat die in Homey?
-   - Is **Spotify gekoppeld in de Sonos-app**?
-4. Speel als allereerste proef **één liedje zacht** af op de Sonos met SoCo (ShareLinkPlugin). Lukt dat niet, dan heeft de rest geen zin: los dat eerst op.
+**Kort:** dit pakket is een kant-en-klare app. `installeer.sh` zet alles neer: Music Assistant (Docker), de app als dienst, en een HomeyScript voor de knop. Er blijven twee dingen over die de eigenaar zelf doet: **Spotify koppelen** in Music Assistant (inloggen in de browser) en **de Flows in Homey** maken (die kun je niet van buitenaf aanmaken).
 
 ---
 
-## 1. Wat de app doet (dit zijn vaste keuzes, niet aan tornen zonder je eigenaar)
+## 1. Wat de app doet (vaste keuzes, niet veranderen zonder je eigenaar)
 
-- Een kind heeft een draaiknop met 4 knoppen aan de muur (bij ons een Philips **Hue Tap Dial**). Op een iPad richt het kind de knop zelf in.
-- **8 plekken:** knop 1–4 **kort** drukken = plek 1–4, knop 1–4 **lang** drukken = plek 5–8.
-- **Liedje toevoegen = Spotify-link plakken.** De iPad van het kind heeft een eigen Spotify-account, dus de bibliotheek van het huisaccount laten we niet zien. In Spotify: ••• → Delen → Link kopiëren → in de app plakken. Titel en hoesje komen gratis van Spotify oEmbed (`https://open.spotify.com/oembed?url=…`), dus er is geen Spotify-sleutel nodig.
-- **Slepen of tikken:** het kind sleept een liedje naar een plek, of tikt op een liedje en daarna op een plek. Plekken kun je onderling wisselen door te slepen. Een naam pas je aan door erop te tikken (hooguit 40 tekens). Weghalen kan, met een knop "Terugzetten".
-- **"Eerder toegevoegd":** alles wat ooit geplakt is, blijft staan om opnieuw te gebruiken.
-- **Dezelfde knop nog een keer indrukken = pauze**, nog een keer = verder.
-- **Na het liedje stopt hij.** Niets mag doorspelen: de wachtrij wordt vervangen, en herhalen en shuffle staan uit. Een album of afspeellijst speelt helemaal af en stopt dan.
-- **Draaien = harder of zachter**, in stappen van 3%, nooit harder dan 60%.
-- **Rusttijd:** de knop "slaapt" doordeweeks van 21:00 tot 07:00, en in het weekend van 22:00 tot 09:00 (vrijdag- en zaterdagavond, zaterdag- en zondagochtend).
-  - Tijdens de rusttijd start er niets: een knop doet alleen pauze, draaien gaat alleen zachter, en in de app kan het kind niet afspelen of hervatten.
-  - De app toont dan "De knop slaapt tot 07:00".
-  - Alleen de ouder stelt deze tijden in, niet in de kinder-app.
-- **4 wekkers** (tabblad Wekkers): elk met een eigen tijd (05:00–21:00), eigen dagen, aan/uit en een eigen liedje. Bijvoorbeeld 's ochtends wakker worden en 's avonds een slaapliedje. De wekker speelt zacht (22%), haalt de speaker eerst uit een groep en zet het geluid aan.
-- **Speaker kiezen:** "Mijn kamer" of een tweede speaker.
-- **Ontwerp "Gloed":** donker glas, warm amber (#FFB547). Het lettertype Sora staat lokaal in `app/static`. Het scherm is gemaakt voor de iPad, liggend én staand, en wordt via Safari → Delen → "Zet op beginscherm" een app.
-- **Één systeem:** er is maar één plek waar de instellingen staan. Nooit een tweede wekker- of knopsysteem ernaast bouwen, anders gaan dingen dubbel af.
+- Een kind heeft een knop met 4 knoppen en een draaiknop aan de muur (bij ons de Philips Hue Tap Dial). Het kind richt die zelf in op een iPad.
+- **8 plekken:** knop 1–4 **kort** drukken = plek 1–4, **lang** drukken = plek 5–8.
+- **Liedje toevoegen = Spotify-link plakken** (••• → Delen → Link kopiëren). Daarna sleept het kind het liedje naar een plek, of tikt het eerst op het liedje en dan op de plek. "Eerder toegevoegd" bewaart alles wat ooit geplakt is.
+- **Dezelfde knop nog een keer indrukken = pauze**, nog een keer = verder. **Draaien** = 3% harder of zachter, nooit harder dan 60%.
+- **Na het liedje is het stil:** de wachtrij wordt vervangen, en herhalen, shuffle en "autoplay" staan uit.
+- **Rusttijd:** de knop slaapt doordeweeks van 21:00 tot 07:00 en in het weekend van 22:00 tot 09:00 (vr- en za-avond, za- en zo-ochtend). Dan start er niets: een knop doet alleen pauze, draaien gaat alleen zachter. De ouder stelt de tijden in via `app/config.json` → `rust`.
+- **4 wekkers en slaapliedjes:** het kind stelt zelf de tijd (05:00–21:00), de dagen en het liedje in. Een wekker speelt zacht (22%).
+- **Één systeem:** alle instellingen staan in de server (`app/data/`). Nooit ernaast een tweede wekker- of knopsysteem in Homey bouwen.
 
-## 2. Hoe het nu werkt (Home Assistant-versie)
+## 2. Hoe het in elkaar zit
 
-- `app/server.py` is een kleine Python-server (aiohttp) die alleen in het thuisnetwerk werkt. De HA-sleutel staat in een bestand op de server, nooit in de browser.
-  - De server kent alleen deze acties, al het andere geeft 404: `/api/plekken`, `/api/plek/{n}` (zetten, weghalen, `/naam`, `/speel`), `/api/wissel`, `/api/pauze`, `/api/speaker`, `/api/link`, `/api/eerder`, `/api/wekkers`, `/api/wekker/{k}` (`/probeer`).
-- `app/index.html` is de hele iPad-app: één bestand, geen framework. **Dit bestand kun je bijna 1-op-1 houden.** Het praat alleen met de API hierboven.
-- In de HA-versie staan de instellingen in HA-helpers (`input_text.kind_knop_N`, `input_datetime.kind_wekker_N`, …). De logica zit in HA-scripts en -automatiseringen: zie `ha-voorbeeld/*.json`. Lees die om te zien wat er precies gebeurt bij drukken, pauze, rusttijd en wekker.
+```
+iPad (Safari-app) ──► app/server_ma.py (deze server, alleen thuisnetwerk) ──► Music Assistant ──► speakers (Google Cast, Sonos, AirPlay …)
+Knop aan de muur ──► Homey Flow ──► HomeyScript (homey/knop.js) ──► POST /api/druk/1-8 of /api/draai/op|neer
+```
+- `app/index.html`: de hele iPad-app.
+- `app/server_ma.py`: de server. Hij slaat de instellingen op, regelt rusttijd en wekkers, en speelt af via de Music Assistant-API.
+- `app/config.json`: wordt gemaakt door de installatie (op basis van `config.voorbeeld.json`). Hierin staan de speakers, de rusttijd en het volume.
+- `installatie/`: `docker-compose.yml` voor Music Assistant en `ma_setup.py`, dat een gebruiker en een sleutel aanmaakt, de speakers zoekt en controleert of Spotify gekoppeld is.
+- `app/server.py` + `ha-voorbeeld/`: de **Home Assistant-versie** waar het vandaan komt. Die heb je hier niet nodig; hij staat er alleen als voorbeeld.
 
-## 3. Plan voor Homey (zo zou ik het doen)
+## 3. Installeren
 
-Homey heeft geen helpers zoals HA. Daarom komt alles **in de server zelf**: de server wordt het ene systeem.
+1. `python3 controle.py`. Staat er een **FOUT**? Los die eerst op, of leg je eigenaar uit wat er moet gebeuren.
+2. `./installeer.sh`. Zonder opties zet hij Music Assistant neer en laat hij **alle gevonden speakers** zien.
+3. Vraag je eigenaar welke speaker in de kinderkamer staat (of leid het af uit de namen). Draai dan:
+   `./installeer.sh --speaker "<naam of id>"`. Een tweede `--speaker` wordt een extra keuze in de app.
+   - Komt een naam twee keer voor (bijv. een Google- en een Sonos-speaker), gebruik dan het id.
+   - Is poort 8857 bezet, voeg dan `--poort 88xx` toe (kies tussen 8700 en 8899).
+4. **Spotify koppelen (eigenaar, eenmalig):** stuur je eigenaar de link naar Music Assistant (`http://<server>:8095`). De inloggegevens staan in `~/.config/mijn-knop/music-assistant-inlog.txt`. Daar: Instellingen → Muziekbronnen → Spotify toevoegen → inloggen. **Spotify Premium is nodig.** Draai daarna `./installeer.sh --speaker …` nog een keer: dan moet er "Spotify is gekoppeld" staan.
+   Had de eigenaar Music Assistant al? Dan maakt het script geen nieuwe gebruiker. In dat geval maakt de eigenaar een token aan (Instellingen → Profiel → Tokens) en zet het in `~/.config/mijn-knop/ma.token`.
+5. **Eerste echte proef:** zet het volume laag en speel één liedje via de app. Lukt dat niet, los het dan eerst op. Kijk in `journalctl --user -u mijn-knop -n 50` en in de log van Music Assistant (`docker logs music-assistant`). Bij Google- of Nest-speakers: kijk of de speaker in Music Assistant staat en of hij daar zelf afspeelt.
 
-1. **Opslag in de server:** één JSON-bestand (`data/staat.json`) met de 8 plekken, de 4 wekkers, de laatst gedrukte plek, de speakerkeuze en de rusttijd-instellingen. Schrijf het atomair weg (tmp-bestand en dan vervangen). De API naar de iPad blijft precies hetzelfde, zodat `index.html` niet hoeft te veranderen.
-2. **Afspelen op Sonos met SoCo** (`pip install soco`). Gebruik de Homey Sonos-app hier niet voor: die speelt geplakte Spotify-links niet goed af.
-   - Afspelen: `ShareLinkPlugin(speaker).add_share_link_to_queue(link)` na `speaker.clear_queue()`. Zet daarna `speaker.play_mode = "NORMAL"` (dus niet herhalen en niet shufflen) en `speaker.play_from_queue(0)`. Zo stopt hij na het liedje.
-   - Voorwaarde: Spotify is gekoppeld in de Sonos-app van het huis. Test dit als allereerste.
-   - Pauze, verder, volume en uit een groep halen (`unjoin`) gaan ook via SoCo.
-   - Geen Sonos in huis? Overleg dan eerst met je eigenaar. Dan wordt het een andere route.
-3. **Knop → server.** Gebruik in Homey per knop-actie een Flow met **HomeyScript** (officiële Athom-app), dat de server aanroept met `fetch`:
-   - knop N kort → `POST http://<server>:<poort>/api/druk/N`
-   - knop N lang → `POST …/api/druk/N+4`
-   - draaien → `POST …/api/draai/+1` of `/-1`
-   - De nieuwe endpoints `druk` en `draai` bevatten de logica die nu in `ha-voorbeeld/script_knop.json` en `automatisering_knop.json` staat: rusttijd, pauze bij dezelfde knop, volume hooguit 60%.
-   - Zet de Flows zo op dat ze één keer werken en daarna nooit meer aangepast hoeven te worden: alle keuzes zitten in de server.
-4. **Wekkers en rusttijd in de server:** een asyncio-lus die elke 20 seconden kijkt of een wekker moet afgaan, in tijdzone Europe/Amsterdam (de server zelf kan op UTC staan!). Onthoud welke wekker vandaag al is afgegaan. Rusttijd volgens de regels hierboven. Geef in `/api/plekken` `rust` en `rust_tot` mee: de app laat die al zien.
-5. **Veiligheid:** de server werkt alleen in het thuisnetwerk (check het IP-adres van elke aanvraag). Er gaan geen poorten open naar internet en er komen geen sleutels in code of git. De server draait als `systemd --user`-dienst.
+## 4. Homey koppelen (de eigenaar klikt, jij legt uit)
 
-## 4. Wat je uit `server.py` haalt of vervangt
+1. Installeer de app **HomeyScript** (van Athom) op de Homey.
+2. Maak in HomeyScript een script **"Mijn knop"** met de inhoud van `homey/knop-ingevuld.js`. Dat bestand heeft het installatiescript al ingevuld met het juiste serveradres.
+3. Maak de Flows. Voor de Hue Tap Dial zijn dat er 10, of één geavanceerde Flow:
+   - **Als** knop 1 kort ingedrukt → **Dan** HomeyScript "Voer script uit met argument" → *Mijn knop*, argument `1`. Doe hetzelfde voor knop 2–4 (argument `2`–`4`).
+   - **Als** knop 1 lang ingedrukt → argument `5`. Knop 2–4 lang → argument `6`–`8`.
+   - **Als** draaiknop rechtsom → argument `op`. **Als** linksom → argument `neer`.
+   - Heet een knop-trigger in Homey anders (bijv. "ingedrukt" en "losgelaten"), kies dan de variant die **één keer** per druk afgaat.
+4. Test elke knop zelf (het volume laag) en kijk of het werkt.
 
-- Alles met `ha(...)`, `HA`, `TOKEN`, `input_*`, `script.*`, `binary_sensor.*` → vervangen door de JSON-opslag en SoCo.
-- `SPEAKERS`: de namen van de Sonos-speakers in dit huis, met een vriendelijke naam ("Mijn kamer").
-- `THUIS`: het eigen thuisnetwerk.
-- Houd aan: `ontleed()` (Spotify-link herkennen, ook `intl-nl` en `spotify.link`-korte links), `oembed()`, hoesjes-cache, "Eerder toegevoegd", `schoon()` (namen inkorten), de tijdsgrenzen 05:00–21:00 voor wekkers.
+## 5. iPad
 
-## 5. Klaar is pas klaar als dit werkt (zelf testen, op het echte huis)
+Open `http://<server>:<poort>` in Safari en kies Delen → **Zet op beginscherm**. De app werkt alleen via de wifi thuis.
 
-- [ ] Link plakken → titel en hoesje verschijnen → slepen naar plek 4 → kort drukken op knop 4 → liedje speelt in de kinderkamer
-- [ ] Nog een keer knop 4 → pauze; nog een keer → verder
-- [ ] Lang drukken op knop 1 → plek 5
-- [ ] Liedje afgelopen → het is stil (er speelt niets anders verder)
+## 6. Klaar is pas klaar als dit werkt (zelf testen, op het echte huis)
+
+- [ ] Link plakken → titel en hoesje verschijnen → slepen naar plek 4 → knop 4 kort → het liedje speelt in de kinderkamer
+- [ ] Knop 4 nog een keer → pauze; nog een keer → verder
+- [ ] Knop 1 lang → plek 5
+- [ ] Liedje afgelopen → het is stil
 - [ ] Draaien → volume ±3%, nooit boven 60%
-- [ ] Rusttijd (zet hem voor de test even op nu) → knoppen doen alleen pauze, draaien alleen zachter, app toont "slaapt", ▶ is weg
+- [ ] Rusttijd (zet `rust.vanaf` even op nu, herstart de dienst) → knop alleen pauze, draaien alleen zachter, app toont "slaapt"; zet het daarna terug
 - [ ] Wekker op over 2 minuten → speelt zacht af, één keer
-- [ ] iPad liggend en staand: alles past, niets valt eruit
-- [ ] Nergens staat een sleutel in de browser, en de server is van buiten het thuisnetwerk niet bereikbaar
+- [ ] iPad liggend en staand: alles past
+- [ ] Van buiten het thuisnetwerk niet bereikbaar; geen sleutels in git of in de browser
 
-Test met het geluid zacht, of als er niemand in de kinderkamer is. Laat je eigenaar pas daarna met het kind proberen.
+**Bijwerken:** `git pull` en daarna `./installeer.sh --speaker "<zelfde>"`. De instellingen in `app/data/` blijven bewaard.

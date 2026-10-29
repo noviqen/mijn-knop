@@ -1,4 +1,4 @@
-"""Stap 0: kan Mijn knop op deze server draaien? Draai: python3 controle.py
+"""Stap 0: kan Mijn knop (zelfstandige versie) op deze server draaien? Draai: python3 controle.py
 
 Kijkt alleen, verandert niets. Elke regel is OK, LET OP of FOUT, met wat je eraan doet.
 """
@@ -32,11 +32,17 @@ else:
     meld("FOUT", f"Python {sys.version.split()[0]} is te oud", "Python 3.10 of nieuwer nodig.")
 
 # 2. Pakketten
-for mod, pip in (("aiohttp", "aiohttp"), ("soco", "soco")):
+for mod, pip in (("aiohttp", "aiohttp"),):
     if importlib.util.find_spec(mod):
         meld("OK", f"Python-pakket {mod}")
     else:
-        meld("LET OP", f"Python-pakket {mod} ontbreekt", f"Installeer in een venv: python3 -m venv .venv && .venv/bin/pip install {pip}")
+        meld("LET OP", f"Python-pakket {mod} ontbreekt", "Geen probleem: installeer.sh zet het in een eigen .venv.")
+
+# 2b. Eigen Python-omgeving kunnen maken
+if importlib.util.find_spec("ensurepip") or shutil.which("uv") or os.path.exists(os.path.expanduser("~/.local/bin/uv")):
+    meld("OK", "Eigen Python-omgeving (venv) maken kan")
+else:
+    meld("LET OP", "python3-venv ontbreekt", "installeer.sh probeert het zelf (met sudo), anders: sudo apt install python3-venv")
 
 # 3. git
 meld("OK", "git") if shutil.which("git") else meld("FOUT", "git ontbreekt", "Installeer git.")
@@ -49,7 +55,7 @@ try:
         meld("OK", f"Server-adres in het thuisnetwerk: {ip}")
     else:
         meld("FOUT", f"Server-adres {ip} lijkt niet in een thuisnetwerk te zitten",
-             "De server moet in hetzelfde netwerk staan als de Sonos en de iPad (geen cloudserver).")
+             "De server moet in hetzelfde netwerk staan als de speakers en de iPad (geen cloudserver).")
 except OSError:
     meld("FOUT", "Geen netwerk gevonden")
 
@@ -60,22 +66,20 @@ try:
 except Exception as e:
     meld("FOUT", "Spotify oEmbed niet bereikbaar", f"Internet nodig op de server ({e.__class__.__name__}).")
 
-# 6. Sonos
-if importlib.util.find_spec("soco"):
-    import soco
-    try:
-        gevonden = soco.discover(timeout=6) or set()
-    except Exception:
-        gevonden = set()
-    if gevonden:
-        namen = ", ".join(sorted(z.player_name for z in gevonden))
-        meld("OK", f"Sonos gevonden: {namen}")
+# 6. Music Assistant of Docker (voor het afspelen op Google Cast, Sonos, AirPlay, ...)
+try:
+    urllib.request.urlopen("http://127.0.0.1:8095/info", timeout=4)
+    meld("OK", "Music Assistant draait al op deze server")
+except Exception:
+    r = run("docker", "info")
+    r2 = run("sudo", "-n", "docker", "info") if not (r and r.returncode == 0) else r
+    if r and r.returncode == 0:
+        meld("OK", "Docker werkt (installeer.sh zet Music Assistant neer)")
+    elif r2 and r2.returncode == 0:
+        meld("OK", "Docker werkt via sudo (installeer.sh zet Music Assistant neer)")
     else:
-        meld("FOUT", "Geen Sonos gevonden",
-             "Staat de server in hetzelfde netwerk? Draait hij in Docker of een VM, dan werkt zoeken soms niet: "
-             "probeer soco.SoCo('<ip-van-speaker>') met het IP uit de Sonos-app (Instellingen > Systeem > Over mijn systeem).")
-else:
-    meld("LET OP", "Sonos niet gecontroleerd", "Installeer eerst soco (zie hierboven) en draai dit opnieuw.")
+        meld("FOUT", "Geen Docker en geen Music Assistant",
+             "Installeer Docker (https://docs.docker.com/engine/install/) of zet je gebruiker in de groep docker.")
 
 # 7. Altijd aan (systemd --user + linger)
 r = run("systemctl", "--user", "is-system-running")
@@ -101,4 +105,4 @@ elif "LET OP" in uitslag:
     print("UITSLAG: bijna klaar. Kijk naar de LET OP-regels.")
 else:
     print("UITSLAG: alles klaar om te bouwen.")
-print("Daarna nog met de eigenaar nagaan: Homey met HomeyScript-app, en Spotify gekoppeld in de Sonos-app.")
+print("Daarna nog nodig: Spotify Premium (koppelen in Music Assistant), en op Homey de app HomeyScript.")
